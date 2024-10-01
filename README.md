@@ -6,3 +6,4 @@ The University of Texas at Austin 2024
 
 ECE 461L - Software Engineering Lab
 
+Rohan Jain, Victor Depetris, Alexander Forlenza, Sidharth Shyamkumar, Jeremy Tran
