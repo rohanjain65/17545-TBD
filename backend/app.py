@@ -2,10 +2,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Allow CORS for cross-origin requests
+CORS(app) 
 
-# Simulating a user database
-user_db = {}
+user_db = {} #TODO: Replace this with a real database in production
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -31,4 +30,4 @@ def login():
         return jsonify({"success": False, "message": "Invalid credentials!"}), 401
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)  # Run on port 5000
+    app.run(debug=True, port=5000) 
