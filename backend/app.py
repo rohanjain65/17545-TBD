@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from pymongo import MongoClient
 
 app = Flask(__name__)
 CORS(app) 
@@ -31,7 +32,7 @@ def register():
     # Store the user in the database
     user_collection.insert_one({
         "username": username,
-        "password": hashed_password
+        "password": password
     })
     return jsonify({"success": True, "message": "User registered!"}), 201
 
