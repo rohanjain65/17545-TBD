@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
+from cipher import encrypt, decrypt
 
 app = Flask(__name__)
 CORS(app) 
@@ -32,7 +33,7 @@ def register():
     # Store the user in the database
     user_collection.insert_one({
         "username": username,
-        "password": password
+        "password": encrypt(password, 3, 1)
     })
     return jsonify({"success": True, "message": "User registered!"}), 201
 
@@ -51,7 +52,7 @@ def login():
     if not user:
         return jsonify({"success": False, "message": "User does not exist!"}), 404
 
-    if user.get('password') == password:
+    if decrypt(user.get('password'), 3, 1) == password:
         return jsonify({"success": True, "message": "Login successful!"}), 200
     else:
         return jsonify({"success": False, "message": "Invalid credentials!"}), 401
