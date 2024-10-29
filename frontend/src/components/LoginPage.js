@@ -28,7 +28,7 @@ function LoginPage() {
     const data = await response.json();
     setMessage(data.message);
     if (data.success) {
-      navigate("/hello");
+      navigate("/Projects");
     }
   };
 
