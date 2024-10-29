@@ -1,0 +1,62 @@
+/* src/components/ProjectsView.css */
+
+.projects-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start; /* Aligns items to the top */
+    height: 100vh; /* Full viewport height to allow top alignment */
+    padding-top: 20px; /* Adds space at the top */  }
+  
+  h1 {
+    margin-bottom: 20px;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 100px; /* Increase the space between buttons */
+    margin-bottom: 20px;
+  }
+  
+  .button-group button {
+    padding: 10px 30px;
+    font-size: 1.1em;
+    min-width: 200px; /* Set a minimum width to keep text on one line */
+    white-space: nowrap; /* Prevents text from wrapping */
+    text-align: center; /* Center the text within the button */
+    cursor: pointer;
+  }
+  
+  .content-area {
+    width: 100%;
+    min-width: 1000px;
+  }
+  
+  .hwset-list {
+    display: flex;
+    gap: 60px; /* Adjust the gap size as needed */
+  }
+
+.leave-button {
+    max-width: 300px;        /* Smaller width */
+    padding: 4px 8px;       /* Compact padding */
+    font-size: 0.8rem;      /* Smaller font size */
+  }
+
+.leaveContainer{
+    display: flex;
+    min-width: 500px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .leaveContainer button {
+    margin: 0 10px; /* Add space between buttons */
+  }
+  
+  .leaveContainer button:last-child {
+    background-color: #d9534f; /* Red background color */
+    color: white; /* White text color */
+}
+  
