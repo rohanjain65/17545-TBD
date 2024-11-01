@@ -63,7 +63,7 @@ def login():
 @app.route('/create', methods=['POST'])
 def createProject():
     data = request.json
-    # Get username to add to new projects authorized users list
+    # Get username to add to new project's authorized users list
     username = data.get('username')
     # Get project name
     projectName = data.get('projectName')
@@ -92,6 +92,30 @@ def createProject():
         "checkedOutHW": 0
     })
     return jsonify({"success": True, "message": "Project created!"}), 201
+
+@app.route('/join', methods=['POST'])
+def joinProject():
+    data = request.json
+    # Get username to add to project's authorized users list
+    username = data.get('username')
+    # Get project ID
+    projectID = data.get('projectID')
+
+    # Check if project name is empty
+    if not projectID:
+        return jsonify({"success": False, "message": "Project ID required!"}), 400
+    # Check if project ID exists
+    if not project_collection.find_one({"projectID": projectID}):
+        return jsonify({"success": False, "message": "Project ID not found!"}), 409
+    
+    # Check if user is already authorized to access project
+    if username in project_collection.find_one({"projectID": projectID})["authorizedUsers"]:
+        return jsonify({"success": False, "message": "User already authorized!"}), 409
+    
+    # Add username to authorized users list of project with projectID
+    project_collection.update_one({"projectID": projectID}, {"$push": {"authorizedUsers": username}})
+
+    return jsonify({"success": True, "message": "Project joined!"}), 201
 
 
 if __name__ == '__main__':
