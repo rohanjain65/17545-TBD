@@ -28,6 +28,7 @@ function LoginPage() {
     const data = await response.json();
     setMessage(data.message);
     if (data.success) {
+      localStorage.setItem("username", username);
       navigate("/Projects");
     }
   };

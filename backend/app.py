@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
 from cipher import encrypt, decrypt
+import random
 
 app = Flask(__name__)
 CORS(app) 
@@ -16,7 +17,9 @@ mongo_uri = f"mongodb+srv://softwarelabtbd:{mongo_password}@tbd-haas.1j781.mongo
 # Connect to MongoDB using the connection string
 client = MongoClient(mongo_uri)
 db = client['TBD-Haas']  
-user_collection = db['users'] 
+user_collection = db['users']
+project_collection = db['Projects']
+existingIDs_collection = db['existingIDs']
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -56,6 +59,40 @@ def login():
         return jsonify({"success": True, "message": "Login successful!"}), 200
     else:
         return jsonify({"success": False, "message": "Invalid credentials!"}), 401
+
+@app.route('/create', methods=['POST'])
+def createProject():
+    data = request.json
+    # Get username to add to new projects authorized users list
+    username = data.get('username')
+    # Get project name
+    projectName = data.get('projectName')
+
+    # Check if project name is empty
+    if not projectName:
+        return jsonify({"success": False, "message": "Project name required!"}), 400
+    # Check if project name is already in use
+    if project_collection.find_one({"projectName": projectName}):
+        return jsonify({"success": False, "message": "Project name already in use!"}), 409
+    
+    # Create random alphanumeric project ID of length 6 that is not already in use
+    projectID = ''.join(random.choices('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', k=6))
+    while existingIDs_collection.find_one({"projectID": projectID}):
+        projectID = ''.join(random.choices('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', k=6))
+    # Add project ID to existingIDs collection
+    existingIDs_collection.insert_one({
+        "projectID": projectID
+    })
+
+    # Create new project with projectID, projectName, authorized users list, and initialized checked out HW quantity
+    project_collection.insert_one({
+        "projectID": projectID,
+        "projectName": projectName,
+        "authorizedUsers": [username],
+        "checkedOutHW": 0
+    })
+    return jsonify({"success": True, "message": "Project created!"}), 201
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000) 
