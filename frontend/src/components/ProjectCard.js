@@ -1,14 +1,10 @@
-// src/components/ProjectCard.js
+// components/ProjectCard.js
 import React from 'react';
 import { Button, Box, Typography } from '@mui/material';
-import HWSetControl from './HWSetControl'; // Import the child component
+import HWSetControl from './HWSetControl';
 
-const ProjectCard = ({ project }) => {
-
-  // Example HwSet data
-  const HWSetList = [
-    "HWSet1", "HWSet2"
-  ];
+export const ProjectCard = ({ project }) => {
+  const HWSetList = ["HWSet1", "HWSet2"];
   
   return (
     <Box sx={{ 
@@ -22,10 +18,8 @@ const ProjectCard = ({ project }) => {
       marginBottom: 1, 
       width: '100%' 
     }}>
-      {/* Project Name */}
       <Typography variant="subtitle1" sx={{ width: '200px' }}>{project.name}</Typography>
       
-      {/* Authorized Users */}
       <Box sx={{ width: '400px' }}>
         <Typography variant="body2">Authorized Users:</Typography>
         <Typography variant="body2">
@@ -35,11 +29,14 @@ const ProjectCard = ({ project }) => {
 
       <div className="hwset-list">
         {HWSetList.map((hwsetName) => (
-          <HWSetControl key={hwsetName} hwsetName={hwsetName} />
+          <HWSetControl 
+            key={hwsetName} 
+            hwsetName={hwsetName} 
+            projectName={project.name}
+          />
         ))}
       </div>
 
-      {/* Leave Project Button */}
       <div className='leaveContainer'>
         <Button variant="contained" color="error" size="small" className='leave-button'>
           Leave

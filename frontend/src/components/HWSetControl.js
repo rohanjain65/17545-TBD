@@ -1,40 +1,70 @@
+// components/HWSetControl.js
 import React, { useState } from 'react';
 import { Button, TextField, Box, Typography } from '@mui/material';
+import { useHWSets } from '../context/HWSetContext';
 
-const HWSetControl = ({ hwsetName }) => {
-  const [available, setAvailable] = useState(100);
+export const HWSetControl = ({ hwsetName, projectName }) => {
   const [input, setInput] = useState(0);
+  const { hwSets, updateHWSet } = useHWSets();
+  
+  const hwSet = hwSets[hwsetName];
+  const checkedOutByThisProject = hwSet.checkedOutByProject[projectName] || 0;
 
   const handleCheckOut = () => {
-    const newAvailable = available - input >= 0 ? available - input : available;
-    setAvailable(newAvailable);
+    if (input > 0 && input <= hwSet.available) {
+      updateHWSet(hwsetName, 'checkout', input, projectName);
+      setInput(0);
+    }
   };
 
   const handleCheckIn = () => {
-    const newAvailable = available + input <= 100 ? available + input : available;
-    setAvailable(newAvailable);
+    if (input > 0 && input <= checkedOutByThisProject) {
+      updateHWSet(hwsetName, 'checkin', input, projectName);
+      setInput(0);
+    }
   };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-      {/* HWSet name and availability */}
-      <Typography variant="body2">{hwsetName} ({available}/100)</Typography>
+      <Typography variant="body2">
+        {hwsetName} (Available: {hwSet.available}/{hwSet.total})
+      </Typography>
+      <Typography variant="body2" color="textSecondary">
+        Checked out: {checkedOutByThisProject}
+      </Typography>
 
-      {/* Number Input with label */}
       <TextField
-        label={`Quantity`}
+        label="Quantity"
         type="number"
         variant="outlined"
         size="small"
         value={input}
-        onChange={(e) => setInput(Number(e.target.value))}
+        onChange={(e) => {
+          const value = Math.max(0, parseInt(e.target.value) || 0);
+          setInput(value);
+        }}
         sx={{ width: '80px' }}
+        InputProps={{ inputProps: { min: 0 } }}
       />
 
-      {/* Check out and check in buttons */}
       <Box sx={{ display: 'flex', gap: 1 }}>
-        <Button variant="contained" size="small" onClick={handleCheckOut}>Out</Button>
-        <Button variant="contained" size="small" color="secondary" onClick={handleCheckIn}>In</Button>
+        <Button 
+          variant="contained" 
+          size="small" 
+          onClick={handleCheckOut}
+          disabled={input <= 0 || input > hwSet.available}
+        >
+          Check Out
+        </Button>
+        <Button 
+          variant="contained" 
+          size="small" 
+          color="secondary" 
+          onClick={handleCheckIn}
+          disabled={input <= 0 || input > checkedOutByThisProject}
+        >
+          Check In
+        </Button>
       </Box>
     </Box>
   );
