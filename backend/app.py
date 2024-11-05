@@ -135,7 +135,7 @@ def checkoutHW():
         return jsonify({"success": False, "message": "Project not found!"}), 404
 
     # Find the hardware set and check available quantity
-    hwset = db['HWSets'].find_one({"hwsetName": hwsetName})
+    hwset = db['HWSets'].find_one({"name": hwsetName})
     if not hwset:
         return jsonify({"success": False, "message": "HWSet not found!"}), 404
 
@@ -144,7 +144,7 @@ def checkoutHW():
 
     # Update available quantity and project checked out quantity
     db['HWSets'].update_one(
-        {"hwsetName": hwsetName},
+        {"name": hwsetName},
         {"$inc": {"availableQuantity": -quantity}}
     )
     project_collection.update_one(
@@ -172,7 +172,8 @@ def checkinHW():
 
     # Update available quantity and project checked out quantity
     db['HWSets'].update_one(
-        {"hwsetName": hwsetName},
+        {"name": hwsetName},
+        # Add quantity to stored availableQuantity
         {"$inc": {"availableQuantity": quantity}}
     )
     project_collection.update_one(
