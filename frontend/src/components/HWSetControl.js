@@ -1,42 +1,63 @@
-import React, { useState } from 'react';
-import { Button, TextField, Box, Typography } from '@mui/material';
+// src/components/HWSetControl.js
+import React, { useState } from "react";
+import { Button, TextField, Typography } from "@mui/material";
 
-const HWSetControl = ({ hwsetName }) => {
-  const [available, setAvailable] = useState(100);
-  const [input, setInput] = useState(0);
+const HWSetControl = ({ hwsetName, projectID }) => {
+  const [quantity, setQuantity] = useState(0);
+  const [message, setMessage] = useState("");
+  const username = localStorage.getItem("username");
 
-  const handleCheckOut = () => {
-    const newAvailable = available - input >= 0 ? available - input : available;
-    setAvailable(newAvailable);
+  const handleCheckout = async () => {
+    const response = await fetch("http://localhost:5000/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, projectID, hwsetName, quantity }),
+    });
+    const data = await response.json();
+    setMessage(data.message);
   };
 
-  const handleCheckIn = () => {
-    const newAvailable = available + input <= 100 ? available + input : available;
-    setAvailable(newAvailable);
+  const handleCheckin = async () => {
+    const response = await fetch("http://localhost:5000/checkin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, projectID, hwsetName, quantity }),
+    });
+    const data = await response.json();
+    setMessage(data.message);
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-      {/* HWSet name and availability */}
-      <Typography variant="body2">{hwsetName} ({available}/100)</Typography>
-
-      {/* Number Input with label */}
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <Typography variant="body2">{hwsetName} (100/100)</Typography>
       <TextField
-        label={`Quantity`}
+        label="Quantity"
         type="number"
-        variant="outlined"
-        size="small"
-        value={input}
-        onChange={(e) => setInput(Number(e.target.value))}
-        sx={{ width: '80px' }}
+        value={quantity}
+        onChange={(e) => setQuantity(Number(e.target.value))}
+        style={{ width: "80px", marginBottom: "8px", marginTop: "8px" }}
       />
-
-      {/* Check out and check in buttons */}
-      <Box sx={{ display: 'flex', gap: 1 }}>
-        <Button variant="contained" size="small" onClick={handleCheckOut}>Out</Button>
-        <Button variant="contained" size="small" color="secondary" onClick={handleCheckIn}>In</Button>
-      </Box>
-    </Box>
+      <div>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          size="small" 
+          onClick={handleCheckout}
+          style={{ marginRight: "8px" }}
+        >
+          OUT
+        </Button>
+        <Button 
+          variant="contained" 
+          color="secondary" 
+          size="small" 
+          onClick={handleCheckin}
+        >
+          IN
+        </Button>
+      </div>
+      {message && <Typography variant="body2" color="error">{message}</Typography>}
+    </div>
   );
 };
 
