@@ -89,7 +89,8 @@ def createProject():
         "projectID": projectID,
         "projectName": projectName,
         "authorizedUsers": [username],
-        "checkedOutHW": 0
+        "checkedOutHW1": 0,
+        "checkedOutHW2": 0
     })
     return jsonify({"success": True, "message": "Project created!"}), 201
 
@@ -147,9 +148,10 @@ def checkoutHW():
         {"name": hwsetName},
         {"$inc": {"availableQuantity": -quantity}}
     )
+    hwsetNumber = 1 if hwsetName == "HWSet1" else 2
     project_collection.update_one(
         {"projectID": projectID},
-        {"$inc": {"checkedOutHW": quantity}}
+        {"$inc": {f"checkedOutHW{hwsetNumber}": quantity}}
     )
 
     return jsonify({"success": True, "message": "Hardware checked out successfully!"}), 200
@@ -176,9 +178,10 @@ def checkinHW():
         # Add quantity to stored availableQuantity
         {"$inc": {"availableQuantity": quantity}}
     )
+    hwsetNumber = 1 if hwsetName == "HWSet1" else 2
     project_collection.update_one(
         {"projectID": projectID},
-        {"$inc": {"checkedOutHW": -quantity}}
+        {"$inc": {f"checkedOutHW{hwsetNumber}": -quantity}}
     )
 
     return jsonify({"success": True, "message": "Hardware checked in successfully!"}), 200

@@ -26,7 +26,7 @@ const ProjectCard = ({ project }) => {
       <Box sx={{ width: '200px' }}>
         <div>
           <Typography variant="subtitle1" sx={{ width: '200px' }}>{project.name}</Typography>
-          <Typography variant="subtitle2">Project ID: 4L2uFn</Typography>
+          <Typography variant="subtitle2">Project ID: 2EC432</Typography>
         </div>
       </Box>
       
@@ -55,7 +55,7 @@ const ProjectCard = ({ project }) => {
 
       <div className="hwset-list">
         {HWSetList.map((hwsetName) => (
-          <HWSetControl key={hwsetName} hwsetName={hwsetName} projectID={"4L2uFn"} />
+          <HWSetControl key={hwsetName} hwsetName={hwsetName} projectID={"2EC432"} />
         ))}
       </div>
 
