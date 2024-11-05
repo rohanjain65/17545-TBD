@@ -35,8 +35,7 @@ const HWSetControl = ({ hwsetName, projectID }) => {
         type="number"
         value={quantity}
         onChange={(e) => setQuantity(Number(e.target.value))}
-        inputProps={{ min: 0 }}
-        style={{ width: "60px", marginBottom: "8px" }}
+        style={{ width: "80px", marginBottom: "8px", marginTop: "8px" }}
       />
       <div>
         <Button 
