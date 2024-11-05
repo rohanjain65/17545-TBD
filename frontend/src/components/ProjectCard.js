@@ -35,7 +35,7 @@ const ProjectCard = ({ project }) => {
 
       <div className="hwset-list">
         {HWSetList.map((hwsetName) => (
-          <HWSetControl key={hwsetName} hwsetName={hwsetName} />
+          <HWSetControl key={hwsetName} hwsetName={hwsetName} projectID={"4L2uFn"} />
         ))}
       </div>
 
