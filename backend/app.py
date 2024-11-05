@@ -118,5 +118,72 @@ def joinProject():
     return jsonify({"success": True, "message": "Project joined!"}), 201
 
 
+@app.route('/checkout', methods=['POST'])
+def checkoutHW():
+    data = request.json
+    username = data.get('username')
+    projectID = data.get('projectID')
+    hwsetName = data.get('hwsetName')
+    quantity = data.get('quantity')
+
+    if not username or not projectID or not hwsetName or not quantity:
+        return jsonify({"success": False, "message": "All fields are required!"}), 400
+
+    # Find the project in the database
+    project = project_collection.find_one({"projectID": projectID})
+    if not project:
+        return jsonify({"success": False, "message": "Project not found!"}), 404
+
+    # Find the hardware set and check available quantity
+    hwset = db['HWSets'].find_one({"name": hwsetName})
+    if not hwset:
+        return jsonify({"success": False, "message": "HWSet not found!"}), 404
+
+    if hwset['availableQuantity'] < quantity:
+        return jsonify({"success": False, "message": "Not enough hardware available!"}), 409
+
+    # Update available quantity and project checked out quantity
+    db['HWSets'].update_one(
+        {"name": hwsetName},
+        {"$inc": {"availableQuantity": -quantity}}
+    )
+    project_collection.update_one(
+        {"projectID": projectID},
+        {"$inc": {"checkedOutHW": quantity}}
+    )
+
+    return jsonify({"success": True, "message": "Hardware checked out successfully!"}), 200
+
+@app.route('/checkin', methods=['POST'])
+def checkinHW():
+    data = request.json
+    username = data.get('username')
+    projectID = data.get('projectID')
+    hwsetName = data.get('hwsetName')
+    quantity = data.get('quantity')
+
+    if not username or not projectID or not hwsetName or not quantity:
+        return jsonify({"success": False, "message": "All fields are required!"}), 400
+
+    # Find the project in the database
+    project = project_collection.find_one({"projectID": projectID})
+    if not project:
+        return jsonify({"success": False, "message": "Project not found!"}), 404
+
+    # Update available quantity and project checked out quantity
+    db['HWSets'].update_one(
+        {"name": hwsetName},
+        # Add quantity to stored availableQuantity
+        {"$inc": {"availableQuantity": quantity}}
+    )
+    project_collection.update_one(
+        {"projectID": projectID},
+        {"$inc": {"checkedOutHW": -quantity}}
+    )
+
+    return jsonify({"success": True, "message": "Hardware checked in successfully!"}), 200
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000) 
