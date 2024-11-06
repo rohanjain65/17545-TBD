@@ -4,7 +4,6 @@ import { Button, Box, Typography } from '@mui/material';
 import HWSetControl from './HWSetControl'; // Import the child component
 
 const ProjectCard = ({ project }) => {
-
   // Example HwSet data
   const HWSetList = [
     "HWSet1", "HWSet2"
@@ -25,8 +24,8 @@ const ProjectCard = ({ project }) => {
       {/* Project Name */}
       <Box sx={{ width: '200px' }}>
         <div>
-          <Typography variant="subtitle1" sx={{ width: '200px' }}>{project.name}</Typography>
-          <Typography variant="subtitle2">Project ID: 2EC432</Typography>
+          <Typography variant="subtitle1" sx={{ width: '200px' }}>{project.projectName}</Typography>
+          <Typography variant="subtitle2">Project ID: {project.projectID}</Typography>
         </div>
       </Box>
       
@@ -44,18 +43,18 @@ const ProjectCard = ({ project }) => {
         <div>
           <Typography variant="subtitle2">Checked out HW from HWSet1:</Typography>
           <Typography variant="body2" marginBottom="50px">
-            0
+            {project.checkedOutHW1}
           </Typography>
           <Typography variant="subtitle2">Checked out HW from HWSet2:</Typography>
           <Typography variant="body2">
-            0
+            {project.checkedOutHW2}
           </Typography>
         </div>
       </Box>
 
       <div className="hwset-list">
         {HWSetList.map((hwsetName) => (
-          <HWSetControl key={hwsetName} hwsetName={hwsetName} projectID={"2EC432"} />
+          <HWSetControl key={hwsetName} hwsetName={hwsetName} projectID={project.projectID} />
         ))}
       </div>
 

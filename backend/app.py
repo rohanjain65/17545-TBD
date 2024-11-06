@@ -186,7 +186,19 @@ def checkinHW():
 
     return jsonify({"success": True, "message": "Hardware checked in successfully!"}), 200
 
+# Get all projects for a user
+@app.route('/projects', methods=['POST'])
+def getProjects():
+    data = request.json
+    username = data.get('username')
 
+    if not username:
+        return jsonify({"success": False, "message": "Username required!"}), 400
+
+    # Find all projects where the user is in the authorized users list
+    projects = project_collection.find({"authorizedUsers": username}, {"_id": 0})
+    
+    return jsonify({"success": True, "projects": list(projects)}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000) 
