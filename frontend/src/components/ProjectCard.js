@@ -4,7 +4,6 @@ import { Button, Box, Typography } from '@mui/material';
 import HWSetControl from './HWSetControl'; // Import the child component
 
 const ProjectCard = ({ project }) => {
-
   // Example HwSet data
   const HWSetList = [
     "HWSet1", "HWSet2"
@@ -23,19 +22,39 @@ const ProjectCard = ({ project }) => {
       width: '100%' 
     }}>
       {/* Project Name */}
-      <Typography variant="subtitle1" sx={{ width: '200px' }}>{project.name}</Typography>
+      <Box sx={{ width: '200px' }}>
+        <div>
+          <Typography variant="subtitle1" sx={{ width: '200px' }}>{project.projectName}</Typography>
+          <Typography variant="subtitle2">Project ID: {project.projectID}</Typography>
+        </div>
+      </Box>
       
       {/* Authorized Users */}
-      <Box sx={{ width: '400px' }}>
-        <Typography variant="body2">Authorized Users:</Typography>
-        <Typography variant="body2">
-          {project.authorizedUsers.join(', ')}
-        </Typography>
+      <Box sx={{ width: '250px' }}>
+        <div>
+          <Typography variant="body2">Authorized Users:</Typography>
+          <Typography variant="body2">
+            {project.authorizedUsers.join(', ')}
+          </Typography>
+        </div>
+      </Box>
+
+      <Box sx={{ width: '250px' }}>
+        <div>
+          <Typography variant="subtitle2">Checked out HW from HWSet1:</Typography>
+          <Typography variant="body2" marginBottom="50px">
+            {project.checkedOutHW1}
+          </Typography>
+          <Typography variant="subtitle2">Checked out HW from HWSet2:</Typography>
+          <Typography variant="body2">
+            {project.checkedOutHW2}
+          </Typography>
+        </div>
       </Box>
 
       <div className="hwset-list">
         {HWSetList.map((hwsetName) => (
-          <HWSetControl key={hwsetName} hwsetName={hwsetName} projectID={"4L2uFn"} />
+          <HWSetControl key={hwsetName} hwsetName={hwsetName} projectID={project.projectID} />
         ))}
       </div>
 
