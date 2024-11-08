@@ -58,12 +58,6 @@ const ProjectCard = ({ project }) => {
         ))}
       </div>
 
-      {/* Leave Project Button */}
-      <div className='leaveContainer'>
-        <Button variant="contained" color="error" size="small" className='leave-button'>
-          Leave
-        </Button>
-      </div>
     </Box>
   );
 };
