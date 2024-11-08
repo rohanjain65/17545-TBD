@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Modal, Box, Button, TextField, Typography } from "@mui/material";
 
-const JoinProjectModal = ({ open, handleClose }) => {
+const JoinProjectModal = ({ open, handleClose, onProjectJoined }) => {
   const [projectID, setProjectID] = useState("");
   const [message, setMessage] = useState("");
   const username = localStorage.getItem("username");
@@ -16,6 +16,7 @@ const JoinProjectModal = ({ open, handleClose }) => {
     const data = await response.json();
     setMessage(data.message);
     if (data.success) {
+      onProjectJoined(); // Trigger Projects refresh on success
       setProjectID(""); // Clear input field on success
     }
   };
