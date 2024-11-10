@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Modal, Box, Button, TextField, Typography } from "@mui/material";
 
-const NewProjectModal = ({ open, handleClose }) => {
+const NewProjectModal = ({ open, handleClose, callback }) => {
   const [projectName, setProjectName] = React.useState("");
   const [message, setMessage] = useState("");
   const username = localStorage.getItem("username");
@@ -18,6 +18,7 @@ const NewProjectModal = ({ open, handleClose }) => {
     const data = await response.json();
     setMessage(data.message);
     setProjectName(""); // Reset input field after submit
+    callback(); // Refresh the project list
   };
 
   const handleModalClose = () => {

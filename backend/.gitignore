@@ -1,2 +1,5 @@
 # passwords
 mongo_pass.txt
+
+# pycache
+__pycache__/

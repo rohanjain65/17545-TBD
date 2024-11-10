@@ -9,12 +9,15 @@ import "./ProjectsView.css";
 function ProjectsView() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleOpenCreateModal = () => setIsCreateModalOpen(true);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
 
   const handleOpenJoinModal = () => setIsJoinModalOpen(true);
   const handleCloseJoinModal = () => setIsJoinModalOpen(false);
+
+  const refreshCallback = () => setRefreshTrigger(refreshTrigger + 1);
 
   return (
     <div className="projects-view">
@@ -24,16 +27,18 @@ function ProjectsView() {
         <button onClick={handleOpenJoinModal}>Join Project</button>  {/* Open Join Modal */}
       </div>
       <div className="content-area">
-        <Projects />
+        <Projects key={refreshTrigger}/>
       </div>
       
       <NewProjectModal 
         open={isCreateModalOpen} 
-        handleClose={handleCloseCreateModal} 
+        handleClose={handleCloseCreateModal}
+        callback={refreshCallback}
       />
       <JoinProjectModal 
         open={isJoinModalOpen} 
         handleClose={handleCloseJoinModal} 
+        callback={refreshCallback}
       />  {/* Join Project Modal */}
     </div>
   );
