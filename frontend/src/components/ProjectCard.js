@@ -36,19 +36,6 @@ const ProjectCard = ({ project }) => {
         </div>
       </Box>
 
-      <Box sx={{ width: '250px' }}>
-        <div>
-          <Typography variant="subtitle2">Checked out HW from HWSet1:</Typography>
-          <Typography variant="body2" marginBottom="50px">
-            {hwSets.HWSet1.checkedOutByProject[project.projectID] || 0}
-          </Typography>
-          <Typography variant="subtitle2">Checked out HW from HWSet2:</Typography>
-          <Typography variant="body2">
-            {hwSets.HWSet2.checkedOutByProject[project.projectID] || 0}
-          </Typography>
-        </div>
-      </Box>
-
       <div className="hwset-list">
         {HWSetList.map((hwsetName) => (
           <HWSetControl 
@@ -60,11 +47,6 @@ const ProjectCard = ({ project }) => {
         ))}
       </div>
 
-      <div className='leaveContainer'>
-        <Button variant="contained" color="error" size="small" className='leave-button'>
-          Leave
-        </Button>
-      </div>
     </Box>
   );
 };
