@@ -34,10 +34,14 @@ def register():
         return jsonify({"success": False, "message": "User already exists!"}), 409
 
     # Store the user in the database
-    user_collection.insert_one({
-        "username": username,
-        "password": encrypt(password, 3, 1)
-    })
+    try:
+        user_collection.insert_one({
+            "username": username,
+            "password": encrypt(password, 3, 1)
+        })
+    except ValueError as e:
+        return jsonify({"success": False, "message": "Password can not contain space characters or exclamation point(!)"}), 500
+    
     return jsonify({"success": True, "message": "User registered!"}), 201
 
 @app.route('/login', methods=['POST'])
