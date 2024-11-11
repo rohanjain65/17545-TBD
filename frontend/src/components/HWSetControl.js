@@ -1,13 +1,21 @@
 // HWSetControl.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, TextField, Typography } from "@mui/material";
 import { useHWSets } from '../context/HWSetContext';
 
-const HWSetControl = ({ hwsetName, projectID, projectName }) => {
+const HWSetControl = ({ hwsetName, projectID, hwcheckedout, callback }) => {
   const [quantity, setQuantity] = useState(0);
   const [message, setMessage] = useState("");
   const username = localStorage.getItem("username");
-  const { hwSets, updateHWSet } = useHWSets();
+  const { availableQty1, availableQty2, updateHWSetData } = useHWSets();
+
+  useEffect(() => {
+    // Clear the message after 5 seconds
+    const timer = message ? setTimeout(() => setMessage(""), 3500) : null;
+    
+    // Clear timeout if component unmounts
+    return () => clearTimeout(timer);
+  }, [message]);
 
   const handleCheckout = async () => {
     try {
@@ -19,7 +27,9 @@ const HWSetControl = ({ hwsetName, projectID, projectName }) => {
       const data = await response.json();
       
       if (data.success) {
-        updateHWSet(hwsetName, 'checkout', quantity, projectID);
+        setQuantity(0);
+        updateHWSetData();
+        callback();
       }
       setMessage(data.message);
     } catch (error) {
@@ -37,7 +47,9 @@ const HWSetControl = ({ hwsetName, projectID, projectName }) => {
       const data = await response.json();
       
       if (data.success) {
-        updateHWSet(hwsetName, 'checkin', quantity, projectID);
+        setQuantity(0);
+        updateHWSetData();
+        callback();
       }
       setMessage(data.message);
     } catch (error) {
@@ -45,18 +57,16 @@ const HWSetControl = ({ hwsetName, projectID, projectName }) => {
     }
   };
 
-  const currentHWSet = hwSets[hwsetName];
-  const checkedOut = currentHWSet.checkedOutByProject[projectID] || 0;
-  const available = currentHWSet.available;
-  const total = currentHWSet.total;
+  const total = 100;
+  const availableQty = hwsetName === 'HWSet1' ? availableQty1 : availableQty2;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
       <Typography variant="body2">
-        {hwsetName} ({available}/{total})
+        {hwsetName} ({availableQty}/{total})
       </Typography>
       <Typography variant="caption">
-        Checked out: {checkedOut}
+        Checked out: {hwcheckedout}
       </Typography>
       <TextField
         label="Quantity"
@@ -67,7 +77,7 @@ const HWSetControl = ({ hwsetName, projectID, projectName }) => {
           setQuantity(value);
         }}
         style={{ width: "80px", marginBottom: "8px", marginTop: "8px" }}
-        inputProps={{ min: 0, max: available }}
+        // inputProps={{ min: 0, max: available }}
       />
       <div>
         <Button 
@@ -76,7 +86,7 @@ const HWSetControl = ({ hwsetName, projectID, projectName }) => {
           size="small" 
           onClick={handleCheckout}
           style={{ marginRight: "8px" }}
-          disabled={quantity === 0 || quantity > available}
+          disabled={quantity === 0 || quantity > availableQty}
         >
           OUT
         </Button>
@@ -85,12 +95,26 @@ const HWSetControl = ({ hwsetName, projectID, projectName }) => {
           color="secondary" 
           size="small" 
           onClick={handleCheckin}
-          disabled={quantity === 0 || quantity > checkedOut}
+          disabled={quantity === 0 || quantity > hwcheckedout}
         >
           IN
         </Button>
       </div>
-      {message && <Typography variant="body2" color="error">{message}</Typography>}
+      {message && (
+      <Typography 
+        variant="body2" 
+        color="error" 
+        style={{
+          maxWidth: "130px", // Set a fixed width
+          textAlign: "center", // Center the text
+          wordWrap: "break-word", // Wrap text if it's long
+          minHeight: "24px", // Reserve space for the message
+          marginTop: "8px" // Add some space above
+        }}
+      >
+        {message}
+      </Typography>
+    )}
     </div>
   );
 };

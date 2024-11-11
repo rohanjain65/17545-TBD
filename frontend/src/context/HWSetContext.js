@@ -1,49 +1,45 @@
 // context/HWSetContext.js
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const HWSetContext = createContext();
 
 export const HWSetProvider = ({ children }) => {
-  const [hwSets, setHWSets] = useState({
-    HWSet1: { total: 100, available: 100, checkedOutByProject: {} },
-    HWSet2: { total: 100, available: 100, checkedOutByProject: {} }
-  });
 
-  const updateHWSet = (hwsetName, operation, quantity, projectName) => {
-    setHWSets(prev => {
-      const hwSet = prev[hwsetName];
-      const currentCheckedOut = hwSet.checkedOutByProject[projectName] || 0;
-      let newCheckedOut = currentCheckedOut;
-      let newAvailable = hwSet.available;
+  const [availableQty1, setAvailableQty1] = useState(100);
+  const [availableQty2, setAvailableQty2] = useState(100);
 
-      if (operation === 'checkout') {
-        if (quantity <= hwSet.available) {
-          newAvailable = hwSet.available - quantity;
-          newCheckedOut = currentCheckedOut + quantity;
-        }
-      } else if (operation === 'checkin') {
-        if (quantity <= currentCheckedOut) {
-          newAvailable = hwSet.available + quantity;
-          newCheckedOut = currentCheckedOut - quantity;
-        }
-      }
-
-      return {
-        ...prev,
-        [hwsetName]: {
-          ...hwSet,
-          available: newAvailable,
-          checkedOutByProject: {
-            ...hwSet.checkedOutByProject,
-            [projectName]: newCheckedOut
-          }
-        }
-      };
-    });
+  // Call /hardware API to get hardware set data
+  const getHWSetData = async (hwsetName) => {
+    try {
+      const response = await fetch("http://localhost:5000/hardware", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hwsetName }),
+      });
+      const data = await response.json();
+      return data;
+    }
+    catch (error) {
+      console.log("Error getting hardware set data");
+    }
   };
 
+  // Update HWSet1 and HWSet2 data
+  const updateHWSetData = async () => {
+    const hwSet1Data = await getHWSetData('HWSet1');
+    const hwSet2Data = await getHWSetData('HWSet2');
+
+    setAvailableQty1(hwSet1Data.hwset.availableQuantity);
+    setAvailableQty2(hwSet2Data.hwset.availableQuantity);
+  };
+
+  // Init HWSet1 and HWSet2 data on component mount
+  useEffect(() => {
+    updateHWSetData();
+  }, []);
+
   return (
-    <HWSetContext.Provider value={{ hwSets, updateHWSet }}>
+    <HWSetContext.Provider value={{ availableQty1, availableQty2, updateHWSetData }}>
       {children}
     </HWSetContext.Provider>
   );

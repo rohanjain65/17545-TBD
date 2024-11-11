@@ -171,6 +171,11 @@ def checkinHW():
     project = project_collection.find_one({"projectID": projectID})
     if not project:
         return jsonify({"success": False, "message": "Project not found!"}), 404
+    
+    hwsetNumber = 1 if hwsetName == "HWSet1" else 2
+    # Check if the project has enough hardware checked out
+    if project[f"checkedOutHW{hwsetNumber}"] < quantity:
+        return jsonify({"success": False, "message": "Not enough hardware checked out!"}), 409
 
     # Update available quantity and project checked out quantity
     db['HWSets'].update_one(
@@ -178,7 +183,6 @@ def checkinHW():
         # Add quantity to stored availableQuantity
         {"$inc": {"availableQuantity": quantity}}
     )
-    hwsetNumber = 1 if hwsetName == "HWSet1" else 2
     project_collection.update_one(
         {"projectID": projectID},
         {"$inc": {f"checkedOutHW{hwsetNumber}": -quantity}}
@@ -199,6 +203,35 @@ def getProjects():
     projects = project_collection.find({"authorizedUsers": username}, {"_id": 0})
     
     return jsonify({"success": True, "projects": list(projects)}), 200
+
+# Get hardware set by name
+@app.route('/hardware', methods=['POST'])
+def getHWSet():
+    data = request.json
+    hwsetName = data.get('hwsetName')
+
+    if not hwsetName:
+        return jsonify({"success": False, "message": "HWSet name required!"}), 400
+
+    # Find the hardware set by name
+    hwset = db['HWSets'].find_one({"name": hwsetName}, {"_id": 0})
+
+    return jsonify({"success": True, "hwset": hwset}), 200
+
+# Get single project by projectID
+@app.route('/project_details', methods=['POST'])
+def getProjectDetails():
+    data = request.json
+    projectID = data.get('projectID')
+
+    if not projectID:
+        return jsonify({"success": False, "message": "Project ID required!"}), 400
+
+    # Find the project by projectID
+    project = project_collection.find_one({"projectID": projectID}, {"_id": 0})
+
+    return jsonify({"success": True, "project": project}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000) 
