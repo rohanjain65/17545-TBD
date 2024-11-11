@@ -1,13 +1,42 @@
 // ProjectCard.js
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Box, Typography } from '@mui/material';
 import HWSetControl from './HWSetControl';
-import { useHWSets } from '../context/HWSetContext';
 
 const ProjectCard = ({ project }) => {
-  const { hwSets } = useHWSets();
-  const HWSetList = ["HWSet1", "HWSet2"];
-  
+  const HWSet1 = "HWSet1";
+  const HWSet2 = "HWSet2";
+  const [checkedOut1, setCheckedOut1] = useState(0);
+  const [checkedOut2, setCheckedOut2] = useState(0);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const refreshCallback = () => {
+    setRefreshTrigger(refreshTrigger + 1);
+  };
+
+  // Get individual project details with /project_details API
+  const getProjectDetails = async (projectID) => {
+    try {
+      const response = await fetch("http://localhost:5000/project_details", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectID }),
+      });
+      const data = await response.json();
+      return data;
+    }
+    catch (error) {
+      console.log("Error getting project details");
+    }
+  };
+
+  React.useEffect(() => {
+    getProjectDetails(project.projectID).then((data) => {
+      setCheckedOut1(data.project.checkedOutHW1);
+      setCheckedOut2(data.project.checkedOutHW2);
+    });
+  }, [refreshTrigger]);
+
   return (
     <Box sx={{ 
       display: 'flex', 
@@ -37,14 +66,18 @@ const ProjectCard = ({ project }) => {
       </Box>
 
       <div className="hwset-list">
-        {HWSetList.map((hwsetName) => (
-          <HWSetControl 
-            key={hwsetName} 
-            hwsetName={hwsetName} 
+        <HWSetControl 
+            hwsetName={HWSet1} 
             projectID={project.projectID}
-            projectName={project.projectName}
-          />
-        ))}
+            hwcheckedout={checkedOut1}
+            callback={refreshCallback}
+        />
+        <HWSetControl 
+          hwsetName={HWSet2} 
+          projectID={project.projectID}
+          hwcheckedout={checkedOut2}
+          callback={refreshCallback}
+        />
       </div>
 
     </Box>
